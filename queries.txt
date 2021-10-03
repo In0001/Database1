@@ -1,0 +1,76 @@
+--Поиск людей прописанных в заданной квартире
+SELECT last_name, first_name, second_name FROM persons 
+JOIN flat_registered ON persons.person_id = flat_registered.person_id
+WHERE flat_id = 1;
+
+
+--Поиск людей владеющих заданной квартирой
+SELECT last_name, first_name, second_name FROM persons 
+JOIN flat_owners ON persons.person_id = flat_owners.person_id
+WHERE flat_id = 1;
+
+
+--Поиск людей прописанных в заданном городе
+SELECT last_name, first_name, second_name FROM persons 
+JOIN flat_registered ON persons.person_id = flat_registered.person_id
+JOIN flats ON flat_registered.flat_id = flats.flat_id
+JOIN houses ON house = house_id
+JOIN streets ON street = street_id
+JOIN cities ON city = city_id
+WHERE city_id = 1;
+
+
+--Поиск людей прописанных в заданном доме
+SELECT last_name, first_name, second_name FROM persons 
+JOIN flat_registered ON persons.person_id = flat_registered.person_id
+JOIN flats ON flat_registered.flat_id = flats.flat_id
+JOIN houses ON house = house_id
+WHERE house_id = 1;
+
+
+--Поиск людей прописанных на улицах из заданного списка улиц
+SELECT persons.person_id, last_name, first_name, second_name FROM persons 
+JOIN flat_registered ON persons.person_id = flat_registered.person_id
+JOIN flats ON flat_registered.flat_id = flats.flat_id
+JOIN houses ON house = house_id
+JOIN streets ON street = street_id
+WHERE street_id in (1, 4, 7);
+
+
+--Поиск бомжей из заданного города
+SELECT last_name, first_name, second_name FROM persons
+JOIN city_of_residence ON persons.person_id = city_of_residence.person_id
+LEFT JOIN flat_registered ON persons.person_id = flat_registered.person_id
+LEFT JOIN flat_owners ON persons.person_id = flat_owners.person_id
+WHERE city_of_residence.city_id = 2
+AND flat_registered.person_id IS NULL
+AND flat_owners.person_id IS NULL;
+
+
+--Запрос для выписывания жильца (человек умер)
+DELETE FROM flat_registered
+WHERE person_id = 13 AND flat_id = 7;
+
+
+--Запрос для прописывания нового жильца в квартире (родился ребенок)
+INSERT INTO flat_registered (person_id, flat_id)
+VALUES (13, 7);
+
+
+--Запрос для переезда семьи в новую квартиру
+UPDATE flat_registered
+SET flat_id = 4
+WHERE flat_id = 1;
+
+
+--Запрос для обмена двух семей квартирами
+WITH flat_numbers (flat1, flat2) AS (
+   VALUES (1, 3)
+)
+UPDATE flat_registered
+SET flat_id = 
+	CASE 
+		WHEN flat_id = (SELECT flat1 FROM flat_numbers) THEN (SELECT flat2 FROM flat_numbers)
+		WHEN flat_id = (SELECT flat2 FROM flat_numbers) THEN (SELECT flat1 FROM flat_numbers)
+	END
+WHERE flat_id IN ((SELECT flat1 FROM flat_numbers), (SELECT flat2 FROM flat_numbers));

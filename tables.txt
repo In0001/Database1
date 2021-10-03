@@ -1,0 +1,59 @@
+CREATE DATABASE database1;
+
+\c database1;
+
+CREATE TABLE persons (
+person_id SERIAL PRIMARY KEY,
+last_name VARCHAR(30) NOT NULL, 
+first_name VARCHAR(30) NOT NULL, 
+second_name VARCHAR(30) NOT NULL, 
+date_of_birth DATE, 
+pasport_number INTEGER
+);
+
+CREATE TABLE cities (
+city_id SERIAL PRIMARY KEY,
+city_name VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE streets (
+street_id SERIAL PRIMARY KEY,
+street_name VARCHAR(30) NOT NULL,
+city INTEGER NOT NULL,
+FOREIGN KEY (city) REFERENCES cities (city_id)
+);
+
+CREATE TABLE houses (
+house_id SERIAL PRIMARY KEY,
+house_number SMALLINT NOT NULL,
+street INTEGER NOT NULL,
+FOREIGN KEY (street) REFERENCES streets (street_id)
+);
+
+CREATE TABLE flats (
+flat_id SERIAL PRIMARY KEY,
+flat_number SMALLINT NOT NULL,
+house INTEGER NOT NULL,
+FOREIGN KEY (house) REFERENCES houses (house_id)
+);
+
+CREATE TABLE city_of_residence (
+person_id INTEGER NOT NULL,
+city_id INTEGER NOT NULL,
+FOREIGN KEY (person_id) REFERENCES persons (person_id),
+FOREIGN KEY (city_id) REFERENCES cities (city_id)
+);
+
+CREATE TABLE flat_owners (
+person_id INTEGER NOT NULL, 
+flat_id INTEGER NOT NULL,
+FOREIGN KEY (person_id) REFERENCES persons (person_id),
+FOREIGN KEY (flat_id) REFERENCES flats (flat_id)
+);
+
+CREATE TABLE flat_registered (
+person_id INTEGER NOT NULL, 
+flat_id INTEGER NOT NULL,
+FOREIGN KEY (person_id) REFERENCES persons (person_id),
+FOREIGN KEY (flat_id) REFERENCES flats (flat_id)
+);
